@@ -127,7 +127,7 @@ public final class PixelEditViewController : UIViewController {
     action: #selector(didTapCancelButton)
   )
 
-  private let imageSource: ImageSource
+  private let imageSource: ImageSourceType
   private var colorCubeStorage: ColorCubeStorage = .default
 
   // MARK: - Initializers
@@ -147,12 +147,12 @@ public final class PixelEditViewController : UIViewController {
     colorCubeStorage: ColorCubeStorage = .default,
     options: Options = .current
     ) {
-    let source = ImageSource(source: image)
+    let source = StaticImageSource(source: image)
     self.init(source: source, colorCubeStorage: colorCubeStorage, options: options)
   }
 
   public init(
-    source: ImageSource,
+    source: ImageSourceType,
     doneButtonTitle: String = L10n.done,
     colorCubeStorage: ColorCubeStorage = .default,
     options: Options = .current
@@ -242,8 +242,6 @@ public final class PixelEditViewController : UIViewController {
             }
           }()
           ])
-
-        setAspect(editingStack.aspectRatio)
         
       }
 
@@ -276,24 +274,15 @@ public final class PixelEditViewController : UIViewController {
 
         stackView.frame = stackView.bounds
         stackView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-
-        stackView.push(
-          options.classes.control.rootControl.init(
-            context: context,
-            colorCubeControl: options.classes.control.colorCubeControl.init(
-              context: context,
-              originalImage: editingStack.cubeFilterPreviewSourceImage,
-              filters: editingStack.availableColorCubeFilters
-            )
-          ),
-          animated: false
-        )
-        stackView.notify(changedEdit: editingStack.currentEdit)
-
       }
-
     }
-
+    switch self.imageSource.imageSource {
+    case .editable(_):
+      ()
+    default:
+      ()
+    }
+  
     bind: do {
 
       context.didReceiveAction = { [weak self] action in
@@ -443,13 +432,14 @@ public final class PixelEditViewController : UIViewController {
   }
 
   private func didReceive(action: PixelEditContext.Action) {
+    guard let aspectRatio = editingStack.aspectRatio else { preconditionFailure()}
     switch action {
     case .setTitle(let title):
       navigationItem.title = title
     case .setMode(let mode):
       set(mode: mode)
     case .endAdjustment(let save):
-      setAspect(editingStack.aspectRatio)
+      setAspect(aspectRatio)
       if save {
         editingStack.setAdjustment(cropRect: adjustmentView.visibleExtent)
         editingStack.commit()
