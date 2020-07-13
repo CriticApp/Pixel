@@ -24,7 +24,7 @@ import UIKit
 import PixelEngine
 
 
-protocol ControlChildViewType {
+public protocol ControlChildViewType {
 
   func didReceiveCurrentEdit(_ edit: EditingStack.Edit)
 }
@@ -61,13 +61,13 @@ extension ControlChildViewType where Self : UIView {
 }
 
 
-final class ControlStackView : UIView {
+public final class ControlStackView : UIView {
 
   private var subscribers: [UIView & ControlChildViewType] = []
 
   private var latestNotifiedEdit: EditingStack.Edit?
   
-  func push(_ view: UIView & ControlChildViewType, animated: Bool) {
+  public func push(_ view: UIView & ControlChildViewType, animated: Bool) {
     
     addSubview(view)
     view.frame = bounds
@@ -167,7 +167,7 @@ final class ControlStackView : UIView {
     }
   }
 
-  func notify(changedEdit: EditingStack.Edit) {
+  public func notify(changedEdit: EditingStack.Edit) {
 
     latestNotifiedEdit = changedEdit
 

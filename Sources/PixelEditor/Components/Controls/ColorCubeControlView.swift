@@ -71,7 +71,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
   open override func setup() {
     super.setup()
 
-    backgroundColor = Style.default.control.backgroundColor
+    backgroundColor = .clear
 
     addSubview(collectionView)
     
@@ -84,7 +84,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
       collectionView.leftAnchor.constraint(equalTo: collectionView.superview!.leftAnchor),
       collectionView.bottomAnchor.constraint(lessThanOrEqualTo: collectionView.superview!.bottomAnchor),
       collectionView.centerYAnchor.constraint(equalTo: collectionView.superview!.centerYAnchor),
-      collectionView.heightAnchor.constraint(equalToConstant: itemSize?.height ?? 100),
+      collectionView.heightAnchor.constraint(equalToConstant: itemSize?.height ?? 124),
       ])
 
     collectionView.dataSource = self
@@ -104,8 +104,8 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     collectionView.backgroundColor = .clear
     collectionView.showsVerticalScrollIndicator = false
     collectionView.showsHorizontalScrollIndicator = false
-    collectionView.contentInset.right = 44
-    collectionView.contentInset.left = 44
+    collectionView.contentInset.right = 20
+    collectionView.contentInset.left = 20
     collectionView.delaysContentTouches = false
 
     collectionView.register(NormalCell.self, forCellWithReuseIdentifier: NormalCell.identifier)
@@ -121,7 +121,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     layout.scrollDirection = .horizontal
     layout.minimumLineSpacing = 16
     layout.minimumInteritemSpacing = 0
-    layout.itemSize = CGSize(width: 64, height: 100)
+    layout.itemSize = CGSize(width: 96, height: 124)
 
     return layout
   }
@@ -199,7 +199,6 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     }
     
     feedbackGenerator.selectionChanged()
-
   }
   
   public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -208,7 +207,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     case .original:
       return .zero
     case .selections:
-      return UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
+      return UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 0)
     }
   }
   
@@ -239,6 +238,10 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     public override init(frame: CGRect) {
       super.init(frame: frame)
       
+      backgroundColor = UIColor(white: 58.0 / 255.0, alpha: 1.0)
+      layer.cornerRadius = 4.0
+      layer.masksToBounds = true
+        
       layout: do {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -255,7 +258,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
           imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
           imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
           
-          nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
+          nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
           nameLabel.rightAnchor.constraint(lessThanOrEqualTo: contentView.rightAnchor, constant: -2),
           nameLabel.leftAnchor.constraint(greaterThanOrEqualTo: contentView.leftAnchor, constant: 2),
           nameLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -266,14 +269,15 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
       style: do {
         
         nameLabel.textAlignment = .center
-        nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
-        nameLabel.textColor = Style.default.black
+        nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        nameLabel.textColor = .white
         
       }
       
       initialStyle: do {
         
         nameLabel.alpha = 0.3
+        nameLabel.font = UIFont.systemFont(ofSize: 12.0)
       }
     }
     
@@ -291,6 +295,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
     open var _isSelected: Bool = false {
       didSet {
         nameLabel.alpha = _isSelected ? 1 : 0.3
+        nameLabel.font = _isSelected ? UIFont.systemFont(ofSize: 12, weight: .semibold) : UIFont.systemFont(ofSize: 12.0)
       }
     }
     

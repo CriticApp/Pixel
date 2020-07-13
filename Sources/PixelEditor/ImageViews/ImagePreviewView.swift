@@ -21,12 +21,12 @@
 
 import Foundation
 
-final class ImagePreviewView : UIView {
+public final class ImagePreviewView : UIView {
 
-  let originalImageView: UIImageView = .init()
-  let imageView: UIImageView = .init()
+  public let originalImageView: UIImageView = .init()
+  public let imageView: UIImageView = .init()
   
-  var originalImage: CIImage? {
+  public var originalImage: CIImage? {
     didSet {
       guard oldValue != originalImage else { return }
       originalImageView.image = originalImage
@@ -36,7 +36,7 @@ final class ImagePreviewView : UIView {
     }
   }
 
-  var image: CIImage? {
+  public var image: CIImage? {
     didSet {
       guard oldValue != image else { return }
       imageView.image = image
@@ -49,6 +49,15 @@ final class ImagePreviewView : UIView {
   override init(frame: CGRect) {
     super.init(frame: .zero)
 
+    commonInit()
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+     commonInit()
+  }
+  
+  func commonInit() {
     [
       originalImageView,
       imageView
@@ -60,26 +69,21 @@ final class ImagePreviewView : UIView {
     }
     
     originalImageView.isHidden = true
-    
-  }
-
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
   
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesBegan(touches, with: event)
     originalImageView.isHidden = false
     imageView.isHidden = true
   }
   
-  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesEnded(touches, with: event)
     originalImageView.isHidden = true
     imageView.isHidden = false
   }
   
-  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesCancelled(touches, with: event)
     originalImageView.isHidden = true
     imageView.isHidden = false

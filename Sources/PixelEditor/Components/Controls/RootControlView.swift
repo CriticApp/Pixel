@@ -59,7 +59,7 @@ final class RootControl : RootControlBase {
 
     super.init(context: context, colorCubeControl: colorCubeControl)
 
-    backgroundColor = Style.default.control.backgroundColor
+    backgroundColor = .red//Style.default.control.backgroundColor
 
     layout: do {
 

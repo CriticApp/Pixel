@@ -45,6 +45,12 @@ public final class StepSlider : UIControl {
       internalSlider.stepLabel.isHidden = newValue
     }
   }
+  
+  public var title: String = "" {
+    didSet {
+      internalSlider.title = title
+    }
+  }
 
   private var minStep: Int = -100
 
@@ -82,12 +88,15 @@ public final class StepSlider : UIControl {
   }
 
   public required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: aDecoder)
+    setup()
+    feedbackGenerator.prepare()
   }
 
   private func setup() {
 
     internalSlider.addTarget(self, action: #selector(__didChangeValue), for: .valueChanged)
+    internalSlider.title = title
 
     addSubview(internalSlider)
     internalSlider.frame = bounds
@@ -224,11 +233,15 @@ public final class StepSlider : UIControl {
 
   private func updateStepLabel() {
     if step == 0 {
-      internalSlider.stepLabel.text = ""
+      internalSlider.stepLabel.text = "0"
+      internalSlider.stepLabel.textColor = UIColor(white: 58.0 / 255.0, alpha: 1.0)
+    } else if step > 0 {
+      internalSlider.stepLabel.text = "+\(step)"
+      internalSlider.stepLabel.textColor = UIColor.white
     } else {
       internalSlider.stepLabel.text = "\(step)"
+      internalSlider.stepLabel.textColor = UIColor.white
     }
-    internalSlider.stepLabel.sizeToFit()
     internalSlider.updateStepLabel()
   }
 }
@@ -247,7 +260,15 @@ extension StepSlider {
 
 private final class _StepSlider: UISlider {
 
+  var title: String! {
+    didSet {
+      self.titleLabel.text = title
+      self.titleLabel.sizeToFit()
+    }
+  }
+  
   let stepLabel: UILabel = .init()
+  let titleLabel: UILabel = .init()
 
   private var _trackImageView: UIImageView?
 
@@ -286,14 +307,15 @@ private final class _StepSlider: UISlider {
 
     layerContext.scaleBy(x: scale, y: scale)
 
-    UIColor(white: 0, alpha: 1).setStroke()
-    UIColor(white: 0, alpha: 1).setFill()
+    UIColor(white: 1, alpha: 1).setStroke()
+    UIColor(white: 1, alpha: 1).setFill()
 
     line: do {
       let path = UIBezierPath()
       path.move(to: CGPoint.init(x: 10, y: bounds.midY))
       path.addLine(to: CGPoint.init(x: bounds.maxX - 10, y: bounds.midY))
-      path.lineWidth = 1
+      path.lineWidth = 4
+      path.lineCapStyle = .round
       path.stroke()
     }
 
@@ -324,15 +346,25 @@ private final class _StepSlider: UISlider {
     minimumTrackTintColor = UIColor.clear
     maximumTrackTintColor = UIColor.clear
     setThumbImage(UIImage(named: "slider_thumb", in: bundle, compatibleWith: nil), for: [])
-    tintColor = Style.default.black
+    tintColor = .white
 
     let label = stepLabel
     label.backgroundColor = UIColor.clear
-    label.font = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: .medium)
-    label.textColor = UIColor.black
-    label.textAlignment = .center
+    label.font = UIFont.monospacedDigitSystemFont(ofSize: 15, weight: .medium)
+    label.textColor = UIColor.white
+    label.textAlignment = .right
+    
+    let title = titleLabel
+    title.backgroundColor = UIColor.clear
+    title.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+    title.textColor = UIColor.white
+    title.textAlignment = .left
 
     self.addSubview(label)
+    self.addSubview(title)
+    
+    findTrackViewIfNeeded()
+
   }
 
   override func layoutSubviews() {
@@ -341,17 +373,16 @@ private final class _StepSlider: UISlider {
   }
 
   func updateStepLabel() {
-    findTrackViewIfNeeded()
-
-    guard let trackImageView = _trackImageView else {
-      return
-    }
-
-    let center = CGPoint(x: trackImageView.frame.midX, y: -16)
-    self.stepLabel.center = center
+    let width: CGFloat = 50.0
+    let height: CGFloat = 30.0
+    self.stepLabel.frame = CGRect(x: self.frame.width-width-10, y: -height, width: width, height: height)
+    self.titleLabel.frame = CGRect(x: 10, y: -height, width: width, height: height)
+    self.titleLabel.text = title
+    self.titleLabel.sizeToFit()
   }
 
   private func findTrackViewIfNeeded() {
+
     guard _trackImageView == nil else {
       return
     }

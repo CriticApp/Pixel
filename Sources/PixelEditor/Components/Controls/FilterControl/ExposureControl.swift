@@ -43,7 +43,7 @@ open class ExposureControl : ExposureControlBase {
   open override func setup() {
     super.setup()
 
-    backgroundColor = Style.default.control.backgroundColor
+    backgroundColor = .red
 
     TempCode.layout(navigationView: navigationView, slider: slider, in: self)
 
