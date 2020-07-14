@@ -319,6 +319,7 @@ private final class _StepSlider: UISlider {
       path.stroke()
     }
 
+    /*
     dot: do {
 
       switch dotLocation {
@@ -334,6 +335,7 @@ private final class _StepSlider: UISlider {
       }
 
     }
+    */
 
     UIGraphicsPopContext()
 
@@ -345,8 +347,8 @@ private final class _StepSlider: UISlider {
 
     minimumTrackTintColor = UIColor.clear
     maximumTrackTintColor = UIColor.clear
-    setThumbImage(UIImage(named: "slider_thumb", in: bundle, compatibleWith: nil), for: [])
-    tintColor = .white
+    let image = UIImage(named: "slider_thumb_bordered", in: bundle, compatibleWith: nil)
+    setThumbImage(image, for: [])
 
     let label = stepLabel
     label.backgroundColor = UIColor.clear
