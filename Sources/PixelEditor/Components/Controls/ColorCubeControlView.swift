@@ -243,20 +243,18 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
       layer.masksToBounds = true
         
       layout: do {
-        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        
+
         contentView.addSubview(nameLabel)
         contentView.addSubview(imageView)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-          
+          imageView.heightAnchor.constraint(equalToConstant: 96),
           imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
           imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
           imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
-          imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
           
           nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
           nameLabel.rightAnchor.constraint(lessThanOrEqualTo: contentView.rightAnchor, constant: -2),
@@ -278,6 +276,7 @@ open class ColorCubeControl : ColorCubeControlBase, UICollectionViewDelegateFlow
         
         nameLabel.alpha = 0.3
         nameLabel.font = UIFont.systemFont(ofSize: 12.0)
+        imageView.contentMode = .scaleAspectFill
       }
     }
     
