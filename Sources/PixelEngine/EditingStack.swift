@@ -131,8 +131,8 @@ open class EditingStack {
           to: Geometry.sizeThatAspectFit(
             aspectRatio: CGSize(width: 1, height: 1),
             boundingSize: CGSize(
-              width: 60 * self.targetScreenScale,
-              height: 60 * self.targetScreenScale
+              width: 96 * self.targetScreenScale,
+              height: 96 * self.targetScreenScale
             )
           ),
           from: self.originalPreviewImage!
