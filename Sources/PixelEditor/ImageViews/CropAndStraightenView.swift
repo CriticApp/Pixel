@@ -96,6 +96,11 @@ public final class CropAndStraightenView : UIView {
     }
   }
   
+  @available(iOS 11.0, *)
+  public func flip() {
+    image = image?.oriented(.upMirrored)
+  }
+  
   private let imageView: ImageScrollView = {
     
     let view = ImageScrollView()

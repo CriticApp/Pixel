@@ -33,6 +33,7 @@ public final class ImageRenderer {
     public var croppingRect: CGRect?
     public var modifiers: [Filtering] = []
     public var drawer: [GraphicsDrawing] = []
+    public var flipped:Bool = false
   }
 
   private let cicontext = CIContext(options: [
@@ -67,9 +68,13 @@ public final class ImageRenderer {
         sourceImage = targetImage
       }
 
-      let result = edit.modifiers.reduce(sourceImage, { image, modifier in
+      var result = edit.modifiers.reduce(sourceImage, { image, modifier in
         return modifier.apply(to: image, sourceImage: sourceImage)
       })
+      
+      if #available(iOS 11.0, *), edit.flipped {
+        result = result.oriented(.upMirrored)
+      }
 
       return result
 

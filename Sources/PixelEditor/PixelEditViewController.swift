@@ -42,6 +42,7 @@ public final class PixelEditContext {
     case removeAllMasking
 
     case setFilter((inout EditingStack.Edit.Filters) -> Void)
+    case flip
 
     case commit
     case revert
@@ -467,6 +468,9 @@ public final class PixelEditViewController : UIViewController {
       editingStack.revert()
     case .setMaskingBrushSize(let size):
       maskingView.brush = .init(color: maskingView.brush.color, width: size)
+    case .flip:
+      editingStack.flip()
+      updateAdjustmentUI()
     }
   }
 

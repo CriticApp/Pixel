@@ -193,10 +193,20 @@ open class EditingStack {
       filters(&$0.filters)
     }
   }
+  
+  public func flip() {
+    if #available(iOS 11.0, *) {
+      adjustmentImage = adjustmentImage?.oriented(.upMirrored)
+      applyIfChanged {
+        $0.flipped = !$0.flipped
+      }
+    }
+  }
 
   public func setAdjustment(cropRect: CGRect) {
 
-    guard let originalImage = source.imageSource?.image else { return } //XXX check for croppability ?
+    //guard let originalImage = source.imageSource?.image else { return } //XXX check for croppability ?
+    guard let originalImage = adjustmentImage else { return } //XXX check for croppability ?
 
     var _cropRect = cropRect
 
@@ -265,6 +275,7 @@ open class EditingStack {
     ]
 
     renderer.edit.modifiers = edit.makeFilters()
+    renderer.edit.flipped = edit.flipped
 
     return renderer
   }
@@ -380,6 +391,7 @@ extension EditingStack {
       }
     }
 
+    public var flipped: Bool = false
     public var cropRect: CGRect?
     public var blurredMaskPaths: [DrawnPathInRect] = []
 
