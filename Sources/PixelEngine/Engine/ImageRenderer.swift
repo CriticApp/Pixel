@@ -34,6 +34,7 @@ public final class ImageRenderer {
     public var modifiers: [Filtering] = []
     public var drawer: [GraphicsDrawing] = []
     public var flipped:Bool = false
+    public var angle: CGFloat?
   }
 
   private let cicontext = CIContext(options: [
@@ -74,6 +75,10 @@ public final class ImageRenderer {
       
       if #available(iOS 11.0, *), edit.flipped {
         result = result.oriented(.upMirrored)
+      }
+      
+      if let angle = edit.angle {
+        result = result.transformed(by: .init(rotationAngle: angle))
       }
 
       return result

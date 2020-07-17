@@ -96,6 +96,14 @@ public final class CropAndStraightenView : UIView {
     }
   }
   
+  public var angle: CGFloat? {
+    didSet {
+      if let a = angle {
+        imageView.zoomView?.transform = CGAffineTransform(rotationAngle: a / 180.0 * CGFloat.pi)
+      }
+    }
+  }
+  
   @available(iOS 11.0, *)
   public func flip() {
     image = image?.oriented(.upMirrored)

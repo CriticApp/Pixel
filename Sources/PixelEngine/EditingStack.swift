@@ -202,6 +202,19 @@ open class EditingStack {
       }
     }
   }
+  
+  public func set(angle: CGFloat) {
+    /*
+    guard let image = adjustmentImage else { return }
+    let transform = CGAffineTransform(translationX: image.extent.midX, y: image.extent.midY)
+        .rotated(by: angle)
+      .translatedBy(x: -image.extent.midX, y: -image.extent.midY)
+    adjustmentImage = image.applyingFilter("CIAffineTransform", parameters: [kCIInputTransformKey: transform])
+    */
+    applyIfChanged {
+      $0.angle = angle
+    }
+  }
 
   public func setAdjustment(cropRect: CGRect) {
 
@@ -234,7 +247,7 @@ open class EditingStack {
       ),
       from: croppedImage
     )
-
+    
     originalPreviewImage = result
   }
 
@@ -276,6 +289,7 @@ open class EditingStack {
 
     renderer.edit.modifiers = edit.makeFilters()
     renderer.edit.flipped = edit.flipped
+    renderer.edit.angle = edit.angle
 
     return renderer
   }
@@ -391,6 +405,7 @@ extension EditingStack {
       }
     }
 
+    public var angle: CGFloat?
     public var flipped: Bool = false
     public var cropRect: CGRect?
     public var blurredMaskPaths: [DrawnPathInRect] = []

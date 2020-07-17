@@ -43,6 +43,7 @@ public final class PixelEditContext {
 
     case setFilter((inout EditingStack.Edit.Filters) -> Void)
     case flip
+    case setAngle(angle: CGFloat)
 
     case commit
     case revert
@@ -470,6 +471,9 @@ public final class PixelEditViewController : UIViewController {
       maskingView.brush = .init(color: maskingView.brush.color, width: size)
     case .flip:
       editingStack.flip()
+      updateAdjustmentUI()
+    case .setAngle(angle: let angle):
+      editingStack.set(angle: angle)
       updateAdjustmentUI()
     }
   }

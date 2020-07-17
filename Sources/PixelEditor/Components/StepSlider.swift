@@ -52,9 +52,9 @@ public final class StepSlider : UIControl {
     }
   }
 
-  private var minStep: Int = -100
+  public var minStep: Int = -100
 
-  private var maxStep: Int = 100
+  public var maxStep: Int = 100
 
   public override var intrinsicContentSize: CGSize {
     return internalSlider.intrinsicContentSize
