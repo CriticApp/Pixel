@@ -137,16 +137,37 @@ public final class CropAndStraightenView : UIView {
   public override func layoutSublayers(of layer: CALayer) {
     super.layoutSublayers(of: layer)
     
-    gridContainerLayer.frame = imageView.layer.frame
+    gridContainerLayer.frame = imageView.layer.frame.insetBy(dx: 30, dy: 0)
+    gridContainerLayer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+    gridContainerLayer.borderWidth = 2.0
     
     gridLayers.forEach { $0.removeFromSuperlayer() }
     gridLayers = []
-    
-    let numberOfGrid = 3
-    
+        
     do {
       
-      let width = gridContainerLayer.bounds.width / CGFloat(numberOfGrid)
+      let path1 = UIBezierPath()
+      path1.move(to: CGPoint(x: 1, y: 30))
+      path1.addLine(to: CGPoint(x: 1, y: 1))
+      path1.addLine(to: CGPoint(x: 30, y: 1))
+      path1.move(to: CGPoint(x: gridContainerLayer.bounds.width-30, y: 1))
+      path1.addLine(to: CGPoint(x: gridContainerLayer.bounds.width-1, y: 1))
+      path1.addLine(to: CGPoint(x: gridContainerLayer.bounds.width-1, y: 30))
+      path1.move(to: CGPoint(x: gridContainerLayer.bounds.width-1, y: gridContainerLayer.bounds.height-30))
+      path1.addLine(to: CGPoint(x: gridContainerLayer.bounds.width-1, y: gridContainerLayer.bounds.height-1))
+      path1.addLine(to: CGPoint(x: gridContainerLayer.bounds.width-30, y: gridContainerLayer.bounds.height-1))
+      path1.move(to: CGPoint(x: 30, y: gridContainerLayer.bounds.height-1))
+      path1.addLine(to: CGPoint(x: 1, y: gridContainerLayer.bounds.height-1))
+      path1.addLine(to: CGPoint(x: 1, y: gridContainerLayer.bounds.height-30))
+      
+      let lineLayer = CAShapeLayer()
+      lineLayer.strokeColor = UIColor(white: 1, alpha: 1).cgColor
+      lineLayer.fillColor = UIColor.clear.cgColor
+      lineLayer.lineWidth = 2.0
+      lineLayer.path = path1.cgPath
+      gridContainerLayer.addSublayer(lineLayer)
+      gridLayers.append(lineLayer)
+      /*
       for i in 1..<numberOfGrid {
         let x = floor(CGFloat(i) * width)
         let path = UIBezierPath()
@@ -156,8 +177,7 @@ public final class CropAndStraightenView : UIView {
         lineLayer.path = path.cgPath
         lineLayer.strokeColor = UIColor(white: 1, alpha: 0.6).cgColor
         lineLayer.fillColor = UIColor.clear.cgColor
-        gridContainerLayer.addSublayer(lineLayer)
-        gridLayers.append(lineLayer)
+
       }
       
       let height = gridContainerLayer.bounds.height / CGFloat(numberOfGrid)
@@ -173,6 +193,7 @@ public final class CropAndStraightenView : UIView {
         gridContainerLayer.addSublayer(lineLayer)
         gridLayers.append(lineLayer)
       }
+    */
     }
   }
 }
