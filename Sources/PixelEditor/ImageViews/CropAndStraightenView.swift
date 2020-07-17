@@ -24,6 +24,8 @@ import UIKit
 public final class CropAndStraightenView : UIView {
   
   // MARK: - Properties
+  @IBOutlet weak var leftOverlay: UIView!
+  @IBOutlet weak var rightOverlay: UIView!
   
   public var image: CIImage? {
     didSet {
@@ -195,6 +197,8 @@ public final class CropAndStraightenView : UIView {
       }
     */
     }
+    bringSubviewToFront(leftOverlay)
+    bringSubviewToFront(rightOverlay)
   }
 }
 
