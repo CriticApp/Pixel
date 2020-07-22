@@ -25,14 +25,14 @@ import PixelEngine
 
 
 public protocol PixelEditViewControllerDelegate : class {
-
+  
   func pixelEditViewController(_ controller: PixelEditViewController, didEndEditing editingStack: EditingStack)
   func pixelEditViewControllerDidCancelEditing(in controller: PixelEditViewController)
   
 }
 
 public final class PixelEditContext {
-
+  
   public enum Action {
     case setTitle(String)
     case setMode(PixelEditViewController.Mode)
@@ -40,24 +40,24 @@ public final class PixelEditContext {
     case setMaskingBrushSize(size: CGFloat)
     case endMasking(save: Bool)
     case removeAllMasking
-
+    
     case setFilter((inout EditingStack.Edit.Filters) -> Void)
     case flip
-    case setAngle(angle: CGFloat)
-
+    case setAngle(angle: CGFloat, rotated: Bool = false)
+    
     case commit
     case revert
     case undo
   }
-
+  
   public var didReceiveAction: (Action) -> Void = { _ in }
   
   public let options: Options
-
+  
   public init(options: Options) {
     self.options = options
   }
-
+  
   public func action(_ action: Action) {
     self.didReceiveAction(action)
   }
@@ -69,15 +69,15 @@ public final class PixelEditViewController : UIViewController {
     public var didEndEditing: (PixelEditViewController, EditingStack) -> Void = { _, _ in }
     public var didCancelEditing: (PixelEditViewController) -> Void = { _ in }
   }
-
+  
   public enum Mode {
-
+    
     case adjustment
     case masking
     case editing
     case preview
   }
-
+  
   public var mode: Mode = .preview {
     didSet {
       guard oldValue != mode else { return }
@@ -96,25 +96,25 @@ public final class PixelEditViewController : UIViewController {
   public private(set) var editingStack: EditingStack!
   
   // MARK: - Private Propaties
-
+  
   private let maskingView = BlurredMosaicView()
-
+  
   private let previewView = ImagePreviewView()
-
+  
   private let adjustmentView = CropAndStraightenView()
-
+  
   private let editContainerView = UIView()
-
+  
   private let controlContainerView = UIView()
-
+  
   private let cropButton = UIButton(type: .system)
-
+  
   private let stackView = ControlStackView()
   
   private let doneButtonTitle: String
   
   private var aspectConstraint: NSLayoutConstraint?
-
+  
   private lazy var doneButton = UIBarButtonItem(
     title: doneButtonTitle,
     style: .done,
@@ -128,17 +128,17 @@ public final class PixelEditViewController : UIViewController {
     target: self,
     action: #selector(didTapCancelButton)
   )
-
+  
   private let imageSource: ImageSourceType
   private var colorCubeStorage: ColorCubeStorage = .default
-
+  
   // MARK: - Initializers
-
+  
   public convenience init(
     editingStack: EditingStack,
     doneButtonTitle: String = L10n.done,
     options: Options = .current
-    ) {
+  ) {
     self.init(source: editingStack.source, options: options)
     self.editingStack = editingStack
   }
@@ -148,38 +148,38 @@ public final class PixelEditViewController : UIViewController {
     doneButtonTitle: String = L10n.done,
     colorCubeStorage: ColorCubeStorage = .default,
     options: Options = .current
-    ) {
+  ) {
     let source = StaticImageSource(source: image)
     self.init(source: source, colorCubeStorage: colorCubeStorage, options: options)
   }
-
+  
   public init(
     source: ImageSourceType,
     doneButtonTitle: String = L10n.done,
     colorCubeStorage: ColorCubeStorage = .default,
     options: Options = .current
-    ) {
+  ) {
     self.imageSource = source
     self.options = options
     self.colorCubeStorage = colorCubeStorage
     self.doneButtonTitle = doneButtonTitle
     super.init(nibName: nil, bundle: nil)
   }
-
+  
   @available(*, unavailable)
   public required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
+  
   // MARK: - Functions
-
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
     
     layout: do {
-
+      
       root: do {
-
+        
         if editingStack == nil {
           editingStack = SquareEditingStack.init(
             source: imageSource,
@@ -187,19 +187,19 @@ public final class PixelEditViewController : UIViewController {
             colorCubeStorage: colorCubeStorage
           )
         }
-
+        
         view.backgroundColor = .white
         
         let guide = UILayoutGuide()
         
         view.addLayoutGuide(guide)
-
+        
         view.addSubview(editContainerView)
         view.addSubview(controlContainerView)
         
         editContainerView.accessibilityIdentifier = "app.muukii.pixel.editContainerView"
         controlContainerView.accessibilityIdentifier = "app.muukii.pixel.controlContainerView"
-
+        
         editContainerView.translatesAutoresizingMaskIntoConstraints = false
         controlContainerView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -243,16 +243,16 @@ public final class PixelEditViewController : UIViewController {
               return controlContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             }
           }()
-          ])
+        ])
         
       }
-
+      
       root: do {
         view.backgroundColor = Style.default.control.backgroundColor
       }
-
+      
       edit: do {
-
+        
         [
           adjustmentView,
           previewView,
@@ -265,40 +265,40 @@ public final class PixelEditViewController : UIViewController {
               view.rightAnchor.constraint(equalTo: view.superview!.rightAnchor),
               view.bottomAnchor.constraint(equalTo: view.superview!.bottomAnchor),
               view.leftAnchor.constraint(equalTo: view.superview!.leftAnchor),
-              ])
+            ])
         }
         
       }
-
+      
       control: do {
-
+        
         controlContainerView.addSubview(stackView)
-
+        
         stackView.frame = stackView.bounds
         stackView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
       }
     }
     switch self.imageSource.imageSource {
-    case .editable(_):
-      ()
-    default:
-      ()
+      case .editable(_):
+        ()
+      default:
+        ()
     }
-  
+    
     bind: do {
-
+      
       context.didReceiveAction = { [weak self] action in
-
+        
         guard let self = self else { return }
-
+        
         self.didReceive(action: action)
-
+        
       }
-
+      
     }
-
+    
     start: do {
-
+      
       editingStack.delegate = self
       view.layoutIfNeeded()
       
@@ -306,12 +306,12 @@ public final class PixelEditViewController : UIViewController {
       previewView.image = editingStack.previewImage
       maskingView.image = editingStack.previewImage
       maskingView.drawnPaths = editingStack.currentEdit.blurredMaskPaths
-
+      
       set(mode: mode)
     }
-
-  }
     
+  }
+  
   // MARK: - Private Functions
   
   private func setAspect(_ size: CGSize) {
@@ -325,15 +325,15 @@ public final class PixelEditViewController : UIViewController {
     
     NSLayoutConstraint.activate([
       newConstraint
-      ])
+    ])
     
     aspectConstraint = newConstraint
     
   }
-
+  
   @objc
   private func didTapDoneButton() {
-
+    
     callbacks.didEndEditing(self, editingStack)
     delegate?.pixelEditViewController(self, didEndEditing: editingStack)
   }
@@ -344,75 +344,75 @@ public final class PixelEditViewController : UIViewController {
     callbacks.didCancelEditing(self)
     delegate?.pixelEditViewControllerDidCancelEditing(in: self)
   }
-
+  
   private func set(mode: Mode) {
     
     switch mode {
-    case .adjustment:
-
-      navigationItem.rightBarButtonItem = nil
-      navigationItem.leftBarButtonItem = nil
-
-      adjustmentView.isHidden = false
-      previewView.isHidden = true
-      maskingView.isHidden = true
-      maskingView.isUserInteractionEnabled = false
-
-      didReceive(action: .setTitle(L10n.editAdjustment))
+      case .adjustment:
+        
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
+        
+        adjustmentView.isHidden = false
+        previewView.isHidden = true
+        maskingView.isHidden = true
+        maskingView.isUserInteractionEnabled = false
+        
+        didReceive(action: .setTitle(L10n.editAdjustment))
+        
+        updateAdjustmentUI()
       
-      updateAdjustmentUI()
-
-    case .masking:
-
-      navigationItem.rightBarButtonItem = nil
-      navigationItem.leftBarButtonItem = nil
-      didReceive(action: .setTitle(L10n.editMask))
-
-      adjustmentView.isHidden = true
-      previewView.isHidden = false
-      maskingView.isHidden = false
-      
-      maskingView.isUserInteractionEnabled = true
-
-      if maskingView.image != editingStack.previewImage {
-        maskingView.image = editingStack.previewImage
+      case .masking:
+        
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
+        didReceive(action: .setTitle(L10n.editMask))
+        
+        adjustmentView.isHidden = true
+        previewView.isHidden = false
+        maskingView.isHidden = false
+        
+        maskingView.isUserInteractionEnabled = true
+        
+        if maskingView.image != editingStack.previewImage {
+          maskingView.image = editingStack.previewImage
       }
-
-    case .editing:
-
-      navigationItem.rightBarButtonItem = nil
-      navigationItem.leftBarButtonItem = nil
-
-      adjustmentView.isHidden = true
-      previewView.isHidden = false
-      maskingView.isHidden = true
-
-      maskingView.isUserInteractionEnabled = false
-
-    case .preview:
-
-      navigationItem.setHidesBackButton(true, animated: false)
-      navigationItem.rightBarButtonItem = doneButton
-      navigationItem.leftBarButtonItem = cancelButton
       
-      didReceive(action: .setTitle(""))
-
-      previewView.isHidden = false
-      adjustmentView.isHidden = true
-      maskingView.isHidden = false
-
-      maskingView.isUserInteractionEnabled = false
+      case .editing:
+        
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
+        
+        adjustmentView.isHidden = true
+        previewView.isHidden = false
+        maskingView.isHidden = true
+        
+        maskingView.isUserInteractionEnabled = false
       
-      if maskingView.image != editingStack.previewImage {
-        maskingView.image = editingStack.previewImage
+      case .preview:
+        
+        navigationItem.setHidesBackButton(true, animated: false)
+        navigationItem.rightBarButtonItem = doneButton
+        navigationItem.leftBarButtonItem = cancelButton
+        
+        didReceive(action: .setTitle(""))
+        
+        previewView.isHidden = false
+        adjustmentView.isHidden = true
+        maskingView.isHidden = false
+        
+        maskingView.isUserInteractionEnabled = false
+        
+        if maskingView.image != editingStack.previewImage {
+          maskingView.image = editingStack.previewImage
       }
-
+      
     }
-
+    
   }
-
+  
   private func syncUI(edit: EditingStack.Edit) {
-
+    
     if !adjustmentView.isHidden {
       updateAdjustmentUI()
     }
@@ -432,56 +432,56 @@ public final class PixelEditViewController : UIViewController {
       adjustmentView.visibleExtent = cropRect
     }
   }
-
+  
   private func didReceive(action: PixelEditContext.Action) {
     guard let aspectRatio = editingStack.aspectRatio else { preconditionFailure()}
     switch action {
-    case .setTitle(let title):
-      navigationItem.title = title
-    case .setMode(let mode):
-      set(mode: mode)
-    case .endAdjustment(let save):
-      setAspect(aspectRatio)
-      if save {
-        editingStack.setAdjustment(cropRect: adjustmentView.visibleExtent)
-        editingStack.commit()
-      } else {
-        syncUI(edit: editingStack.currentEdit)
+      case .setTitle(let title):
+        navigationItem.title = title
+      case .setMode(let mode):
+        set(mode: mode)
+      case .endAdjustment(let save):
+        setAspect(aspectRatio)
+        if save {
+          editingStack.setAdjustment(cropRect: adjustmentView.visibleExtent)
+          editingStack.commit()
+        } else {
+          syncUI(edit: editingStack.currentEdit)
       }
-    case .endMasking(let save):
-      if save {
-        editingStack.set(blurringMaskPaths: maskingView.drawnPaths)
-        editingStack.commit()
-      } else {
-        syncUI(edit: editingStack.currentEdit)
+      case .endMasking(let save):
+        if save {
+          editingStack.set(blurringMaskPaths: maskingView.drawnPaths)
+          editingStack.commit()
+        } else {
+          syncUI(edit: editingStack.currentEdit)
       }
-    case .removeAllMasking:
-      editingStack.set(blurringMaskPaths: [])
-      editingStack.commit()
-      syncUI(edit: editingStack.currentEdit)
-    case .setFilter(let closure):
-      editingStack.set(filters: closure)
-    case .commit:
-      editingStack.commit()
-    case .undo:
-      editingStack.undo()
-    case .revert:
-      editingStack.revert()
-    case .setMaskingBrushSize(let size):
-      maskingView.brush = .init(color: maskingView.brush.color, width: size)
-    case .flip:
-      editingStack.flip()
-      updateAdjustmentUI()
-    case .setAngle(angle: let angle):
-      editingStack.set(angle: angle)
-      updateAdjustmentUI()
+      case .removeAllMasking:
+        editingStack.set(blurringMaskPaths: [])
+        editingStack.commit()
+        syncUI(edit: editingStack.currentEdit)
+      case .setFilter(let closure):
+        editingStack.set(filters: closure)
+      case .commit:
+        editingStack.commit()
+      case .undo:
+        editingStack.undo()
+      case .revert:
+        editingStack.revert()
+      case .setMaskingBrushSize(let size):
+        maskingView.brush = .init(color: maskingView.brush.color, width: size)
+      case .flip:
+        editingStack.flip()
+        updateAdjustmentUI()
+      case .setAngle(let angle, let _):
+        editingStack.set(angle: angle)
+        updateAdjustmentUI()
     }
   }
-
+  
 }
 
 extension PixelEditViewController : EditingStackDelegate {
-
+  
   public func editingStack(_ stack: EditingStack, didChangeCurrentEdit edit: EditingStack.Edit) {
     
     EditorLog.debug("[EditingStackDelegate] didChagneCurrentEdit")
@@ -498,5 +498,5 @@ extension PixelEditViewController : EditingStackDelegate {
     stackView.notify(changedEdit: edit)
     
   }
-
+  
 }
