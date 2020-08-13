@@ -215,6 +215,12 @@ open class EditingStack {
       $0.angle = angle
     }
   }
+  
+  public func set(zoomLevel: CGFloat) {
+    applyIfChanged {
+      $0.zoomLevel = zoomLevel
+    }
+  }
 
   public func setAdjustment(cropRect: CGRect) {
 
@@ -408,6 +414,7 @@ extension EditingStack {
     public var angle: CGFloat?
     public var flipped: Bool = false
     public var cropRect: CGRect?
+    public var zoomLevel: CGFloat?
     public var blurredMaskPaths: [DrawnPathInRect] = []
 
     public var filters: Filters = .init()

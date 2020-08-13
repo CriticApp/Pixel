@@ -10,6 +10,15 @@ import UIKit
 
 open class ImageScrollView: UIScrollView {
 
+  public var currentZoomScale: CGFloat {
+    set {
+      zoomScale = newValue
+    }
+    get {
+      return zoomScale
+    }
+  }
+  
   @objc public enum ScaleMode: Int {
     case aspectFill
     case aspectFit

@@ -109,7 +109,7 @@ public final class CropAndStraightenView : UIView {
     image = image?.oriented(.upMirrored)
   }
   
-  private let imageView: ImageScrollView = {
+  public let imageView: ImageScrollView = {
     
     let view = ImageScrollView()
     view.imageContentMode = .aspectFill

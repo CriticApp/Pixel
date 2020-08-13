@@ -44,6 +44,7 @@ public final class PixelEditContext {
     case setFilter((inout EditingStack.Edit.Filters) -> Void)
     case flip
     case setAngle(angle: CGFloat, rotated: Bool = false)
+    case setZoom(level: CGFloat)
     
     case commit
     case revert
@@ -474,6 +475,9 @@ public final class PixelEditViewController : UIViewController {
         updateAdjustmentUI()
       case .setAngle(let angle, let _):
         editingStack.set(angle: angle)
+        updateAdjustmentUI()
+      case .setZoom(level: let level):
+        editingStack.set(zoomLevel: level)
         updateAdjustmentUI()
     }
   }
