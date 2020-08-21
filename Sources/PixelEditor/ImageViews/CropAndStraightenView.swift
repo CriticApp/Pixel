@@ -30,28 +30,29 @@ public final class CropAndStraightenView : UIView {
   
   public var image: CIImage? {
     didSet {
-      
-      let _image: UIImage?
-      if originalImage == nil { originalImage = image }
-      
-      if let cgImage = image?.cgImage {
-        _image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
-      } else {
-        // Displaying will be slow in iOS13
-        _image = image
-          .flatMap { $0.transformed(by: .init(translationX: -$0.extent.origin.x, y: -$0.extent.origin.y)) }
-          .flatMap { UIImage(ciImage: $0, scale: UIScreen.main.scale, orientation: .up) }
-      }
-      
-      if let image = _image {
-        imageView.display(image: image)
-      } else {
-        imageView.zoomView?.removeFromSuperview()
+      autoreleasepool {
+        let _image: UIImage?
+        if originalImage == nil { originalImage = image }
+        
+        if let cgImage = image?.cgImage {
+          _image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
+        } else {
+          // Displaying will be slow in iOS13
+          _image = image
+            .flatMap { $0.transformed(by: .init(translationX: -$0.extent.origin.x, y: -$0.extent.origin.y)) }
+            .flatMap { UIImage(ciImage: $0, scale: UIScreen.main.scale, orientation: .up) }
+        }
+        
+        if let image = _image {
+          imageView.display(image: image)
+        } else {
+          imageView.zoomView?.removeFromSuperview()
+        }
       }
     }
   }
   
-  private var originalImage: CIImage?
+  private weak var originalImage: CIImage?
   
   // return pixel
   public var visibleExtent: CGRect {
