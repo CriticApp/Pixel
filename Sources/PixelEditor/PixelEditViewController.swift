@@ -471,10 +471,10 @@ public final class PixelEditViewController : UIViewController {
       case .setMaskingBrushSize(let size):
         maskingView.brush = .init(color: maskingView.brush.color, width: size)
       case .flip:
-        editingStack.flip(withCropRect: adjustmentView.visibleExtent)
+        editingStack.flip()
         updateAdjustmentUI()
-      case .setAngle(let angle, let _):
-        editingStack.set(angle: angle, cropRect: adjustmentView.visibleExtent)
+      case .setAngle(let angle, _):
+        editingStack.set(angle: angle)
         updateAdjustmentUI()
       case .setZoom(level: let level):
         editingStack.set(zoomLevel: level)

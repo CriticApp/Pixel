@@ -103,26 +103,35 @@ public final class CropAndStraightenView : UIView {
   public var angle: CGFloat? {
     didSet {
       if let a = angle {
-        switch a {
-          case 0:
-            image = originalImage?.oriented(.up)
-          case 90:
-            image = originalImage?.oriented(.right)
-          case 180:
-            image = originalImage?.oriented(.down)
-          case 270:
-            image = originalImage?.oriented(.left)
-          default:
-            ()
-        }
-        imageView.adjustFrameToCenter()
+        updateOrientation(angle: a)
       }
     }
   }
   
-  @available(iOS 11.0, *)
-  public func flip() {
-    image = image?.oriented(.upMirrored)
+  public var flipped: Bool = false {
+    didSet {
+      if let a = angle {
+        updateOrientation(angle: a)
+      } else {
+        image = originalImage?.oriented(flipped ? .upMirrored : .up)
+      }
+    }
+  }
+  
+  private func updateOrientation(angle: CGFloat) {
+    switch angle {
+      case 0:
+        image = originalImage?.oriented(flipped ? .upMirrored : .up)
+      case 90:
+        image = originalImage?.oriented(flipped ? .rightMirrored : .right)
+      case 180:
+        image = originalImage?.oriented(flipped ? .downMirrored : .down)
+      case 270:
+        image = originalImage?.oriented(flipped ? .leftMirrored : .left)
+      default:
+        ()
+    }
+    imageView.adjustFrameToCenter()
   }
   
   public let imageView: ImageScrollView = {

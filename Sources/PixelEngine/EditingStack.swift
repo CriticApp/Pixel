@@ -194,24 +194,13 @@ open class EditingStack {
     }
   }
   
-  public func flip(withCropRect cropRect: CGRect) {
-    if #available(iOS 11.0, *) {
-      adjustmentImage = adjustmentImage?.oriented(.upMirrored)
-      applyIfChanged {
-        $0.cropRect = cropRect
-        $0.flipped = !$0.flipped
-      }
+  public func flip() {
+    applyIfChanged {
+      $0.flipped = !$0.flipped
     }
   }
   
-  public func set(angle: CGFloat, cropRect: CGRect) {
-    /*
-    guard let image = adjustmentImage else { return }
-    let transform = CGAffineTransform(translationX: image.extent.midX, y: image.extent.midY)
-        .rotated(by: angle)
-      .translatedBy(x: -image.extent.midX, y: -image.extent.midY)
-    adjustmentImage = image.applyingFilter("CIAffineTransform", parameters: [kCIInputTransformKey: transform])
-    */
+  public func set(angle: CGFloat) {
     applyIfChanged {
       $0.angle = angle
     }

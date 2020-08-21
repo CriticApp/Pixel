@@ -56,39 +56,38 @@ public final class ImageRenderer {
     }
     let resultImage: CIImage = {
 
-      let sourceImage: CIImage
+      var sourceImage: CIImage = targetImage
+      
+      if edit.flipped && edit.angle == nil {
+        sourceImage = targetImage.oriented(.upMirrored)
+      }
+      
+      if let angle = edit.angle {
+        switch angle {
+          case 90:
+            sourceImage = targetImage.oriented(edit.flipped ? .rightMirrored : .right)
+          case 180:
+            sourceImage = targetImage.oriented(edit.flipped ? .downMirrored : .down)
+          case 270:
+            sourceImage = targetImage.oriented(edit.flipped ? .leftMirrored : .left)
+          default:
+            sourceImage = targetImage.oriented(edit.flipped ? .upMirrored : .up)
+        }
+      }
 
       if var croppingRect = edit.croppingRect {
         croppingRect.origin.x.round(.up)
         croppingRect.origin.y.round(.up)
         croppingRect.size.width.round(.up)
         croppingRect.size.height.round(.up)
-        croppingRect.origin.y = targetImage.extent.height - croppingRect.minY - croppingRect.height
-        sourceImage = targetImage.cropped(to: croppingRect)
+        sourceImage = sourceImage.cropped(to: croppingRect)
       } else {
         sourceImage = targetImage
       }
 
-      var result = edit.modifiers.reduce(sourceImage, { image, modifier in
+      let result = edit.modifiers.reduce(sourceImage, { image, modifier in
         return modifier.apply(to: image, sourceImage: sourceImage)
       })
-      
-      if #available(iOS 11.0, *), edit.flipped {
-        result = result.oriented(.upMirrored)
-      }
-      
-      if let angle = edit.angle, #available(iOS 11.0, *) {
-        switch angle {
-          case 90:
-            result = result.oriented(edit.flipped ? .rightMirrored : .right)
-          case 180:
-            result = result.oriented(edit.flipped ? .downMirrored : .down)
-          case 270:
-            result = result.oriented(edit.flipped ? .leftMirrored : .left)
-          default:
-            result = result.oriented(edit.flipped ? .upMirrored : .up)
-        }
-      }
 
       return result
 
