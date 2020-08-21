@@ -12,6 +12,6 @@ Pod::Spec.new do |s|
 
   s.module_name = s.name
   s.requires_arc = true
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.ios.frameworks = ['UIKit', 'CoreImage']
 end

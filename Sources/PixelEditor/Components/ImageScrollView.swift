@@ -159,7 +159,6 @@ open class ImageScrollView: UIScrollView {
 
   @objc open func display(image: UIImage) {
 
-    if zoomView == nil {
       zoomView = UIImageView(image: image)
       zoomView!.isUserInteractionEnabled = true
       addSubview(zoomView!)
@@ -169,9 +168,6 @@ open class ImageScrollView: UIScrollView {
       zoomView!.addGestureRecognizer(tapGesture)
 
       configureImageForSize(image.size)
-    } else {
-      zoomView?.image = image
-    }
   }
 
   private func configureImageForSize(_ size: CGSize) {

@@ -213,7 +213,6 @@ open class EditingStack {
     adjustmentImage = image.applyingFilter("CIAffineTransform", parameters: [kCIInputTransformKey: transform])
     */
     applyIfChanged {
-      $0.cropRect = cropRect
       $0.angle = angle
     }
   }

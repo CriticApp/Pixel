@@ -80,13 +80,13 @@ public final class ImageRenderer {
       if let angle = edit.angle, #available(iOS 11.0, *) {
         switch angle {
           case 90:
-            result = result.oriented(edit.flipped ? .upMirrored : .up)
-          case 180:
             result = result.oriented(edit.flipped ? .rightMirrored : .right)
-          case 270:
+          case 180:
             result = result.oriented(edit.flipped ? .downMirrored : .down)
-          default:
+          case 270:
             result = result.oriented(edit.flipped ? .leftMirrored : .left)
+          default:
+            result = result.oriented(edit.flipped ? .upMirrored : .up)
         }
       }
 

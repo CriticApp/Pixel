@@ -21,6 +21,7 @@
 
 import UIKit
 
+@available(iOS 11.0, *)
 public final class CropAndStraightenView : UIView {
   
   // MARK: - Properties
@@ -31,6 +32,7 @@ public final class CropAndStraightenView : UIView {
     didSet {
       
       let _image: UIImage?
+      if originalImage == nil { originalImage = image }
       
       if let cgImage = image?.cgImage {
         _image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
@@ -48,6 +50,8 @@ public final class CropAndStraightenView : UIView {
       }
     }
   }
+  
+  private var originalImage: CIImage?
   
   // return pixel
   public var visibleExtent: CGRect {
@@ -99,7 +103,19 @@ public final class CropAndStraightenView : UIView {
   public var angle: CGFloat? {
     didSet {
       if let a = angle {
-        imageView.zoomView?.transform = CGAffineTransform(rotationAngle: a / 180.0 * CGFloat.pi)
+        switch a {
+          case 0:
+            image = originalImage?.oriented(.up)
+          case 90:
+            image = originalImage?.oriented(.right)
+          case 180:
+            image = originalImage?.oriented(.down)
+          case 270:
+            image = originalImage?.oriented(.left)
+          default:
+            ()
+        }
+        imageView.adjustFrameToCenter()
       }
     }
   }
