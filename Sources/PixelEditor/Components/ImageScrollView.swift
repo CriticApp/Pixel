@@ -159,19 +159,19 @@ open class ImageScrollView: UIScrollView {
 
   @objc open func display(image: UIImage) {
 
-    if let zoomView = zoomView {
-      zoomView.removeFromSuperview()
+    if zoomView == nil {
+      zoomView = UIImageView(image: image)
+      zoomView!.isUserInteractionEnabled = true
+      addSubview(zoomView!)
+
+      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(ImageScrollView.doubleTapGestureRecognizer(_:)))
+      tapGesture.numberOfTapsRequired = 2
+      zoomView!.addGestureRecognizer(tapGesture)
+
+      configureImageForSize(image.size)
+    } else {
+      zoomView?.image = image
     }
-
-    zoomView = UIImageView(image: image)
-    zoomView!.isUserInteractionEnabled = true
-    addSubview(zoomView!)
-
-    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(ImageScrollView.doubleTapGestureRecognizer(_:)))
-    tapGesture.numberOfTapsRequired = 2
-    zoomView!.addGestureRecognizer(tapGesture)
-
-    configureImageForSize(image.size)
   }
 
   private func configureImageForSize(_ size: CGSize) {
@@ -274,6 +274,9 @@ open class ImageScrollView: UIScrollView {
 }
 
 extension ImageScrollView: UIScrollViewDelegate{
+  
+  public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+  }
 
   public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
     return zoomView
