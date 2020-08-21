@@ -79,7 +79,7 @@ public final class CropAndStraightenView : UIView {
       
       guard let image = image else { return }
       
-      imageView.zoomScale = 0
+      imageView.setZoomScale(0, animated: false)
       
       let scale = _ratio(
         to: imageView.zoomView!.bounds.size,

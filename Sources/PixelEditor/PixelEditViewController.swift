@@ -474,8 +474,7 @@ public final class PixelEditViewController : UIViewController {
         editingStack.flip(withCropRect: adjustmentView.visibleExtent)
         updateAdjustmentUI()
       case .setAngle(let angle, let _):
-        editingStack.setAdjustment(cropRect: adjustmentView.visibleExtent)
-        editingStack.set(angle: angle)
+        editingStack.set(angle: angle, cropRect: adjustmentView.visibleExtent)
         updateAdjustmentUI()
       case .setZoom(level: let level):
         editingStack.set(zoomLevel: level)

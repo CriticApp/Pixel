@@ -204,7 +204,7 @@ open class EditingStack {
     }
   }
   
-  public func set(angle: CGFloat) {
+  public func set(angle: CGFloat, cropRect: CGRect) {
     /*
     guard let image = adjustmentImage else { return }
     let transform = CGAffineTransform(translationX: image.extent.midX, y: image.extent.midY)
@@ -213,6 +213,7 @@ open class EditingStack {
     adjustmentImage = image.applyingFilter("CIAffineTransform", parameters: [kCIInputTransformKey: transform])
     */
     applyIfChanged {
+      $0.cropRect = cropRect
       $0.angle = angle
     }
   }
